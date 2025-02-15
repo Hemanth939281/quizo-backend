@@ -15,14 +15,14 @@ datasource db {
 
 model User {
   id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  username String  @unique
+  password  String?
 }
 
 model Quiz {
   id          String    @id @default(uuid())
   title       String
   description String
-  teacherId Int
+  teacherId Int 
   createdAt   DateTime  @default(now())
 }
