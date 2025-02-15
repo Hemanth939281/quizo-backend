@@ -1,15 +1,45 @@
-export const login = async (req, res) => {
-    const { username, password } = req.body;
+import { PrismaClient } from "@prisma/client";
 
-    if (!username ||!password) {
-      return res.status(400).json({ message: 'Missing username or password' });
+const prisma = new PrismaClient();
+
+export const signup = async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: "Username and password are required" });
+  }
+
+  try {
+    const existingUser = await prisma.user.findUnique({ where: { username } });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
-    
-    if (username === "teacher" && password === "teacher123") {
-      console.log(process.env.USERNAME, process.env.PASSWORD);
-      return res.status(200).json({ message: 'Login successful' });
+
+    const user = await prisma.user.create({
+      data: { username, password },
+    });
+
+    res.status(201).json({ message: "Signup successful", user });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const login = async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: "Missing username or password" });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({ where: { username } });
+    if (!user || user.password !== password) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
-  
-    res.status(401).json({ message: 'Invalid credentials' });
-  };
-  
+
+    res.status(200).json({ message: "Login successful", user });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
