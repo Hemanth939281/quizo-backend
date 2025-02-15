@@ -21,7 +21,8 @@ export const signup = async (req, res) => {
 
     res.status(201).json({ message: "Signup successful", user });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Signup Error:", error);
+    res.status(500).json({ message: "Something went wrong!" });
   }
 };
 
@@ -40,6 +41,7 @@ export const login = async (req, res) => {
 
     res.status(200).json({ message: "Login successful", user });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Login Error:", error);
+    res.status(500).json({ message: "Something went wrong!" });
   }
 };
