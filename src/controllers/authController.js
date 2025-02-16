@@ -12,15 +12,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.signup = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const signup = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = req.body;
     if (!username || !password) {
-        return res.status(400).json({ message: "Username and password are required" });
+        res.status(400).json({ message: "Username and password are required" });
+        return;
     }
     try {
         const existingUser = yield prisma.user.findUnique({ where: { username } });
         if (existingUser) {
-            return res.status(400).json({ message: "User already exists" });
+            res.status(400).json({ message: "User already exists" });
+            return;
         }
         const user = yield prisma.user.create({
             data: { username, password },
@@ -33,15 +35,17 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.signup = signup;
-const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = req.body;
     if (!username || !password) {
-        return res.status(400).json({ message: "Missing username or password" });
+        res.status(400).json({ message: "Missing username or password" });
+        return;
     }
     try {
         const user = yield prisma.user.findUnique({ where: { username } });
         if (!user || user.password !== password) {
-            return res.status(401).json({ message: "Invalid credentials" });
+            res.status(401).json({ message: "Invalid credentials" });
+            return;
         }
         res.status(200).json({ message: "Login successful", user });
     }

@@ -25,7 +25,8 @@ exports.getQuizzes = getQuizzes;
 const createQuiz = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, description, teacherId } = req.body;
     if (!title || !description || !teacherId) {
-        return res.status(400).json({ message: 'Missing required fields' });
+        res.status(400).json({ message: 'Missing required fields' });
+        return;
     }
     try {
         const newQuiz = yield prisma.quiz.create({
@@ -42,8 +43,10 @@ const getQuizById = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { id } = req.params;
     try {
         const quiz = yield prisma.quiz.findUnique({ where: { id } });
-        if (!quiz)
-            return res.status(404).json({ message: 'Quiz not found' });
+        if (!quiz) {
+            res.status(404).json({ message: 'Quiz not found' });
+            return;
+        }
         res.json(quiz);
     }
     catch (error) {
@@ -55,7 +58,8 @@ const updateQuiz = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { id } = req.params;
     const { title, description } = req.body;
     if (!title && !description) {
-        return res.status(400).json({ message: 'Missing required fields' });
+        res.status(400).json({ message: 'Missing required fields' });
+        return;
     }
     try {
         const updatedQuiz = yield prisma.quiz.update({
