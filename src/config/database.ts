@@ -1,10 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL, 
-});
+const prisma = new PrismaClient();
 
-const connectDB = async () => {
+const connectDB = async (): Promise<void> => {
   try {
     await prisma.$connect();
     console.log('Connected to the database successfully');
@@ -14,4 +12,12 @@ const connectDB = async () => {
   }
 };
 
+// Graceful shutdown handling
+process.on('SIGINT', async () => {
+  await prisma.$disconnect();
+  console.log('Database disconnected');
+  process.exit(0);
+});
+
 export default connectDB;
+export { prisma };
